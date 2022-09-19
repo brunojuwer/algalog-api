@@ -7,6 +7,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 
 import br.com.juwer.algalog.api.model.EntregaModel;
+import br.com.juwer.algalog.api.model.input.EntregaInput;
 import br.com.juwer.algalog.domain.model.Entrega;
 import lombok.AllArgsConstructor;
 
@@ -23,5 +24,9 @@ public class EntregaAssembler {
     return entregas.stream()
             .map(this::toModel)
             .collect(Collectors.toList());
+  }
+
+  public Entrega toEntity(EntregaInput entregaInput){
+    return modelMapper.map(entregaInput, Entrega.class);
   }
 }
