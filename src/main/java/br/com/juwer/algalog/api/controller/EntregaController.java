@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.juwer.algalog.api.assembler.EntregaAssembler;
 import br.com.juwer.algalog.api.model.EntregaModel;
 import br.com.juwer.algalog.domain.model.Entrega;
 import br.com.juwer.algalog.domain.repository.EntregaReposiroty;
@@ -27,26 +28,24 @@ public class EntregaController {
   
   private SolicitacaoEntregaService solicitacaoEntregaService;
   private EntregaReposiroty entregaReposiroty;
+  private EntregaAssembler entregaAssembler;
 
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
-  public Entrega solicitar(@Valid @RequestBody Entrega entrega){
-    return solicitacaoEntregaService.solicitar(entrega);
+  public EntregaModel solicitar(@Valid @RequestBody Entrega entrega){
+    return entregaAssembler
+            .toModel(solicitacaoEntregaService.solicitar(entrega));
   }
 
   @GetMapping
-  public List<Entrega> listar(){
-    return entregaReposiroty.findAll();
+  public List<EntregaModel> listar(){
+    return entregaAssembler.toCollectionModel(entregaReposiroty.findAll());
   }
 
   @GetMapping("/{entregaId}")
   public ResponseEntity<EntregaModel> buscar(@PathVariable Long entregaId){
     return entregaReposiroty.findById(entregaId)
-            .map(entrega -> {
-              EntregaModel entregaModel = new EntregaModel();
-              return ResponseEntity.ok(entregaModel);
-              
-            }).orElse(ResponseEntity.notFound().build());
+            .map(entrega -> ResponseEntity.ok(entregaAssembler.toModel(entrega)))
+            .orElse(ResponseEntity.notFound().build());
   }
-  
 }
